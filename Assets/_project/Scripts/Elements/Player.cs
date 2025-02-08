@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public GameDirector gameDirector;
+
     public LayerMask groundLayerMask;
 
     public float speed;
@@ -51,7 +53,9 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 100, groundLayerMask))
         {
-            transform.LookAt(hit.point);
+            var lookPos = hit.point;
+            lookPos.y = transform.position.y;
+            transform.LookAt(lookPos);
         }
     }
 }

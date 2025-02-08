@@ -7,7 +7,7 @@ public class LevelManager : MonoBehaviour
     public int currentLevelNo;
     public List<Level> levelPrebs;
 
-    private Level currentLevel;
+    public Level currentLevel;
     public void RestartLevel()
     {
         DeleteCurrentLevel();
@@ -26,5 +26,5 @@ public class LevelManager : MonoBehaviour
     {
         currentLevel = Instantiate(levelPrebs[levelNo]);
         currentLevel.transform.position = Vector3.zero;
-    }     
+    }    
 }
