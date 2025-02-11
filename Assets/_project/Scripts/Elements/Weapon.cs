@@ -25,7 +25,7 @@ public class Weapon : MonoBehaviour
         var newBullet = Instantiate(bulletPrefab,
             player.gameDirector.levelManager.currentLevel.transform);
         newBullet.transform.position = shootPos.position;
-        newBullet.transform.LookAt(transform.position + transform.forward * 10);
+        newBullet.transform.LookAt(shootPos.transform.position + shootPos.transform.forward * 10);
         newBullet.StartBullet(this);
         _lastShootTime = Time.time;
     }

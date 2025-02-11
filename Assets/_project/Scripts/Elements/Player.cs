@@ -18,10 +18,27 @@ public class Player : MonoBehaviour
     public float sensitivity;
 
     public Vector2 turn;
+
+    public int startHealth;
+    private int _currentHealth;
+
+    public HealthBar healthBar;
+
     public void RestartPlayer()
     {
+        gameObject.SetActive(true);
         _rb = GetComponent<Rigidbody>();
         _rb.position = Vector3.zero;
+        _currentHealth = startHealth;
+        healthBar.SetHealthBar(7);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Saw"))
+        {
+            GetHit(1);
+        }
     }
 
     private void Update()
@@ -56,6 +73,17 @@ public class Player : MonoBehaviour
             var lookPos = hit.point;
             lookPos.y = transform.position.y;
             transform.LookAt(lookPos);
+        }
+        healthBar.transform.position = transform.position + Vector3.up * 2.4f;
+    }
+
+    public void GetHit(int damage)
+    {
+        _currentHealth -= damage;
+        healthBar.SetHealthBar(_currentHealth);
+        if (_currentHealth <= 0)
+        {
+            gameObject.SetActive(false);
         }
     }
 }
