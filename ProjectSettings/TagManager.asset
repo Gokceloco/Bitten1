@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Saw
+  - Enemy
   layers:
   - Default
   - TransparentFX

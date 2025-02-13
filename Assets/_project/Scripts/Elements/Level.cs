@@ -1,16 +1,17 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Level : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private List<Enemy> _enemies = new List<Enemy>();
+    public void StartLevel(Player player)
     {
-        
-    }
+        _enemies = GetComponentsInChildren<Enemy>().ToList();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        foreach (var enemy in _enemies)
+        {
+            enemy.StartEnemy(player);
+        }
     }
 }

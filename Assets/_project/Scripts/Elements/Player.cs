@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _rb.position = Vector3.zero;
         _currentHealth = startHealth;
-        healthBar.SetHealthBar(7);
+        healthBar.SetHealthBar(1);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -80,7 +80,7 @@ public class Player : MonoBehaviour
     public void GetHit(int damage)
     {
         _currentHealth -= damage;
-        healthBar.SetHealthBar(_currentHealth);
+        healthBar.SetHealthBar((float)_currentHealth / startHealth);
         if (_currentHealth <= 0)
         {
             gameObject.SetActive(false);

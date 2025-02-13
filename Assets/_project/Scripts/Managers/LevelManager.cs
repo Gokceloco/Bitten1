@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
+    public GameDirector gameDirector;
     public int currentLevelNo;
     public List<Level> levelPrebs;
 
@@ -26,5 +27,6 @@ public class LevelManager : MonoBehaviour
     {
         currentLevel = Instantiate(levelPrebs[levelNo]);
         currentLevel.transform.position = Vector3.zero;
+        currentLevel.StartLevel(gameDirector.player);
     }    
 }
