@@ -1,33 +1,36 @@
+using DG.Tweening;
 using JetBrains.Annotations;
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
+    [Header("Elements")]
     public GameDirector gameDirector;
+    public Transform cameraHolder;
+    public HealthBar healthBar;
+    public Transform clickIndicator;
 
+    [Header("Properties")]
     public LayerMask groundLayerMask;
+    public float startSpeed;  
+    public float sensitivity;    
+    public int startHealth;
 
-    public float speed;
+    private bool _isDead;
+
+    private int _currentHealth;
 
     private Rigidbody _rb;
 
-    public Transform cameraHolder;
-
-    public float sensitivity;
-
-    public Vector2 turn;
-
-    public int startHealth;
-    private int _currentHealth;
-
-    public HealthBar healthBar;
-
+    private NavMeshAgent _agent;
     public void RestartPlayer()
     {
         gameObject.SetActive(true);
         _rb = GetComponent<Rigidbody>();
+        _agent = GetComponent<NavMeshAgent>();
         _rb.position = Vector3.zero;
         _currentHealth = startHealth;
         healthBar.SetHealthBar(1);
@@ -61,6 +64,13 @@ public class Player : MonoBehaviour
         {
             direction += Vector3.left;
         }
+        var speed = startSpeed;
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            speed = startSpeed * 2;
+        }
+
         _rb.position += direction.normalized * speed * Time.deltaTime;
 
         var pos = transform.position;
@@ -68,6 +78,7 @@ public class Player : MonoBehaviour
 
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
+        
         if (Physics.Raycast(ray, out hit, 100, groundLayerMask))
         {
             var lookPos = hit.point;
@@ -83,7 +94,17 @@ public class Player : MonoBehaviour
         healthBar.SetHealthBar((float)_currentHealth / startHealth);
         if (_currentHealth <= 0)
         {
+            gameDirector.gameState = GameState.FailScreen;
+            _isDead = true;
+            gameDirector.levelManager.currentLevel.StopAllEnemies();
             gameObject.SetActive(false);
         }
+    }
+
+    
+
+    public bool GetIfDead()
+    {
+        return _isDead;
     }
 }

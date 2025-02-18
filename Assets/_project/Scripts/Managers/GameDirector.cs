@@ -6,6 +6,8 @@ public class GameDirector : MonoBehaviour
     public LevelManager levelManager;
     public Player player;
 
+    public GameState gameState;
+
     private void Start()
     {
         RestartLevel();
@@ -36,5 +38,14 @@ public class GameDirector : MonoBehaviour
     {
         levelManager.RestartLevel();
         player.RestartPlayer();
+        gameState = GameState.GamePlay;
     }
+}
+
+public enum GameState
+{
+    GamePlay,
+    FailScreen,
+    VictoryScreen,
+    MainMenu,
 }

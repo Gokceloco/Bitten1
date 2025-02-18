@@ -14,4 +14,11 @@ public class Level : MonoBehaviour
             enemy.StartEnemy(player);
         }
     }
+    public void StopAllEnemies()
+    {
+        foreach (var enemy in _enemies)
+        {
+            enemy.StopEnemy();
+        }
+    }
 }

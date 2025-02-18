@@ -4,6 +4,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float bulletSpeed;
+    public float maxDistance;
 
     private Weapon _weapon;
     private bool _isMoving;
@@ -21,7 +22,7 @@ public class Bullet : MonoBehaviour
 
         var distanceVector = transform.position - _weapon.transform.position;
         var distanceToWeapon = distanceVector.magnitude;
-        if (distanceToWeapon > 50)
+        if (distanceToWeapon > maxDistance)
         {
             Destroy(gameObject);
         }
@@ -35,7 +36,7 @@ public class Bullet : MonoBehaviour
         }
         if (other.CompareTag("Enemy"))
         {
-            other.GetComponentInParent<Enemy>().GetHit(1);
+            other.GetComponentInParent<Enemy>().GetHit(1, transform.forward);
             Destroy(gameObject);
         }
     }
