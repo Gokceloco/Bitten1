@@ -16,16 +16,17 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetMouseButton(0) && Time.time - _lastShootTime > attackRate)
         {
-            Shoot();            
-        }
+            Shoot();
+        }              
     }
-
     private void Shoot()
     {
         var newBullet = Instantiate(bulletPrefab,
             player.gameDirector.levelManager.currentLevel.transform);
         newBullet.transform.position = shootPos.position;
-        newBullet.transform.LookAt(shootPos.transform.position + shootPos.transform.forward * 10);
+        newBullet.transform.LookAt(shootPos.transform.position + shootPos.transform.forward * 10 
+            + transform.right * UnityEngine.Random.Range(-jitter, jitter)
+            + Vector3.up * UnityEngine.Random.Range(-jitter, jitter));
         newBullet.StartBullet(this);
         _lastShootTime = Time.time;
     }

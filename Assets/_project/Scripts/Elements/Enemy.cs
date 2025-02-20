@@ -6,7 +6,6 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
     public float playerDistanceThreshold;
-    public float speed;
     public float hitDuration;
 
     public int startHealth;
@@ -23,24 +22,40 @@ public class Enemy : MonoBehaviour
 
     private bool _isBeingPushed;
 
+    private Vector3 _playerAttackOffset;
+
+    private bool _isMoving;
+
     public void StartEnemy(Player player)
     {
+        agent.SetDestination(transform.position);
         _healthBar = GetComponentInChildren<HealthBar>();
         _currentHealth = startHealth;
         _player = player;
         _gameDirector = _player.gameDirector;
         _healthBar.SetHealthBar(1);
+        _playerAttackOffset = new Vector3(UnityEngine.Random.Range(-1f,1f),
+            0, UnityEngine.Random.Range(-1f, 1f)) * UnityEngine.Random.Range(1f,3f);
     }
+
+    public void StartMoving()
+    {
+        _isMoving = true;
+    }
+
     private void Update()
     {
-        var distanceToPlayer = (transform.position - _player.transform.position).magnitude;
-        if (distanceToPlayer < playerDistanceThreshold
-            && _gameDirector.gameState == GameState.GamePlay
-            && Time.time - _lastHitTime > hitDuration
-            && !_isBeingPushed)
+        if (_isMoving)
         {
-            MoveToPlayer();
-        }
+            var distanceToPlayer = (transform.position - _player.transform.position).magnitude;
+            if (distanceToPlayer < playerDistanceThreshold
+                && _gameDirector.gameState == GameState.GamePlay
+                && Time.time - _lastHitTime > hitDuration
+                && !_isBeingPushed)
+            {
+                MoveToPlayer();
+            }
+        }        
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -54,8 +69,16 @@ public class Enemy : MonoBehaviour
     }
 
     private void MoveToPlayer()
-    {        
-        agent.SetDestination(_player.transform.position);
+    {
+        var distanceToPlayer = (transform.position - _player.transform.position).magnitude;
+        if (distanceToPlayer < 4.5f)
+        {
+            agent.SetDestination(_player.transform.position);
+        }
+        else
+        {
+            agent.SetDestination(_player.transform.position + _playerAttackOffset);
+        }
     }
 
     public void StopEnemy()
@@ -70,7 +93,10 @@ public class Enemy : MonoBehaviour
         _healthBar.SetHealthBar((float)_currentHealth / startHealth);
 
         _isBeingPushed = true;
-        transform.DOKill();
+        if (_isMoving)
+        {
+            transform.DOKill();
+        }
         hitDirection.y = 0;
         transform.DOMove(transform.position + hitDirection, .2f).OnComplete(SetIsBeingPushedFalse);
         
@@ -85,6 +111,7 @@ public class Enemy : MonoBehaviour
     }
     private void Die()
     {
+        GetComponentInParent<Level>().EnemyDied(this);
         gameObject.SetActive(false);
     }
 }

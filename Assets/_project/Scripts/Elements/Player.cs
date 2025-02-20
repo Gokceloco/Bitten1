@@ -18,6 +18,8 @@ public class Player : MonoBehaviour
     public float startSpeed;  
     public float sensitivity;    
     public int startHealth;
+    public float jumpPower;
+    public float fallSpeed;
 
     private bool _isDead;
 
@@ -85,6 +87,18 @@ public class Player : MonoBehaviour
             lookPos.y = transform.position.y;
             transform.LookAt(lookPos);
         }
+
+        if (Input.GetKeyDown(KeyCode.Space) 
+            && Physics.Raycast(transform.position + Vector3.up * .1f, Vector3.down, 1f, groundLayerMask))
+        {
+            _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, jumpPower, _rb.linearVelocity.z);
+        }
+
+        if (_rb.linearVelocity.y < 0)
+        {
+            _rb.linearVelocity -= Vector3.up * Time.deltaTime * fallSpeed;
+        }
+
         healthBar.transform.position = transform.position + Vector3.up * 2.4f;
     }
 

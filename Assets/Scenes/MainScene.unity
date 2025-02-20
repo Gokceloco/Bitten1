@@ -313,6 +313,8 @@ MonoBehaviour:
   startSpeed: 7
   sensitivity: 5
   startHealth: 3
+  jumpPower: 7
+  fallSpeed: 50
 --- !u!54 &379835656
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1256,7 +1258,9 @@ MonoBehaviour:
   player: {fileID: 379835655}
   bulletPrefab: {fileID: 4657223446272176595, guid: 81b5107171aee514db625f2fef0a1605, type: 3}
   shootPos: {fileID: 803812677}
-  attackRate: 0.15
+  attackRate: 0.12
+  jitter: 0.5
+  weaponType: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

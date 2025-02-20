@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class Level : MonoBehaviour
 {
-    private List<Enemy> _enemies = new List<Enemy>();
-    public void StartLevel(Player player)
+    public Player player;
+    public List<Enemy> _enemies = new List<Enemy>();
+    public void StartLevel(Player p)
     {
+        player = p;
         _enemies = GetComponentsInChildren<Enemy>().ToList();
 
         foreach (var enemy in _enemies)
         {
-            enemy.StartEnemy(player);
+            enemy.StartEnemy(p);
+            enemy.StartMoving();
         }
     }
     public void StopAllEnemies()
@@ -20,5 +23,13 @@ public class Level : MonoBehaviour
         {
             enemy.StopEnemy();
         }
+    }
+    public void EnemySpawned(Enemy enemy)
+    {
+        _enemies.Add(enemy);
+    }
+    public void EnemyDied(Enemy enemy)
+    {
+        _enemies.Remove(enemy);
     }
 }
