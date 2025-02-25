@@ -24,7 +24,15 @@ public class Enemy : MonoBehaviour
 
     private Vector3 _playerAttackOffset;
 
-    private bool _isMoving;
+    private bool _isAbleToMove;
+
+    private Rigidbody _rb;
+
+    private Level _level;
+
+    private Animator _animator;
+
+    private bool _isMoveAnimationActive;
 
     public void StartEnemy(Player player)
     {
@@ -36,16 +44,18 @@ public class Enemy : MonoBehaviour
         _healthBar.SetHealthBar(1);
         _playerAttackOffset = new Vector3(UnityEngine.Random.Range(-1f,1f),
             0, UnityEngine.Random.Range(-1f, 1f)) * UnityEngine.Random.Range(1f,3f);
+        _rb = GetComponent<Rigidbody>();
+        _animator = GetComponentInChildren<Animator>();
     }
 
     public void StartMoving()
     {
-        _isMoving = true;
+        _isAbleToMove = true;
     }
 
     private void Update()
     {
-        if (_isMoving)
+        if (_isAbleToMove)
         {
             var distanceToPlayer = (transform.position - _player.transform.position).magnitude;
             if (distanceToPlayer < playerDistanceThreshold
@@ -54,8 +64,13 @@ public class Enemy : MonoBehaviour
                 && !_isBeingPushed)
             {
                 MoveToPlayer();
+                if (!_isMoveAnimationActive)
+                {
+                    _isMoveAnimationActive = true;
+                    _animator.SetTrigger("Walk");
+                }
             }
-        }        
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -65,6 +80,20 @@ public class Enemy : MonoBehaviour
             var player = collision.gameObject.GetComponent<Player>();
             player.GetHit(1);
             _lastHitTime = Time.time;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Border"))
+        {
+            agent.enabled = false;
+            _isAbleToMove = false;
+            _rb.constraints = RigidbodyConstraints.None;
+        }
+        if (other.CompareTag("YBorder"))
+        {
+            Destroy(gameObject);
         }
     }
 
@@ -93,7 +122,7 @@ public class Enemy : MonoBehaviour
         _healthBar.SetHealthBar((float)_currentHealth / startHealth);
 
         _isBeingPushed = true;
-        if (_isMoving)
+        if (_isAbleToMove)
         {
             transform.DOKill();
         }

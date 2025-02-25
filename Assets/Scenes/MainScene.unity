@@ -1055,7 +1055,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044417578}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: fb863ab182a250f46ad743795d358db8, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1258,9 +1258,9 @@ MonoBehaviour:
   player: {fileID: 379835655}
   bulletPrefab: {fileID: 4657223446272176595, guid: 81b5107171aee514db625f2fef0a1605, type: 3}
   shootPos: {fileID: 803812677}
-  attackRate: 0.12
+  attackRate: 0.15
   jitter: 0.5
-  weaponType: 1
+  weaponType: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -99,6 +99,11 @@ public class Player : MonoBehaviour
             _rb.linearVelocity -= Vector3.up * Time.deltaTime * fallSpeed;
         }
 
+        if (direction == Vector3.zero)
+        {
+            _rb.linearVelocity = new Vector3(0, _rb.linearVelocity.y, 0);
+        }
+
         healthBar.transform.position = transform.position + Vector3.up * 2.4f;
     }
 
