@@ -12,6 +12,8 @@ public class Weapon : MonoBehaviour
 
     private float _lastShootTime;
 
+    public float jitter;
+
     private void Update()
     {
         if (Input.GetMouseButton(0) && Time.time - _lastShootTime > attackRate)
