@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
     public int startHealth;
     public float jumpPower;
     public float fallSpeed;
+    public AnimationState animationState;
 
     private bool _isDead;
 
@@ -28,6 +29,9 @@ public class Player : MonoBehaviour
     private Rigidbody _rb;
 
     private NavMeshAgent _agent;
+
+    private Animator _animator;
+
     public void RestartPlayer()
     {
         gameObject.SetActive(true);
@@ -36,6 +40,7 @@ public class Player : MonoBehaviour
         _rb.position = Vector3.zero;
         _currentHealth = startHealth;
         healthBar.SetHealthBar(1);
+        _animator = GetComponentInChildren<Animator>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -99,12 +104,30 @@ public class Player : MonoBehaviour
             _rb.linearVelocity -= Vector3.up * Time.deltaTime * fallSpeed;
         }
 
+        if (direction.magnitude > 0)
+        {
+            if (animationState != AnimationState.Walk)
+            {
+                animationState = AnimationState.Walk;
+                _animator.SetTrigger("Walk");
+            }
+        }
         if (direction == Vector3.zero)
         {
             _rb.linearVelocity = new Vector3(0, _rb.linearVelocity.y, 0);
+            if (animationState != AnimationState.Idle)
+            {
+                animationState = AnimationState.Idle;
+                _animator.SetTrigger("Idle");
+            }
         }
 
         healthBar.transform.position = transform.position + Vector3.up * 2.4f;
+    }
+
+    public void SetAnimationTrigger(string triggerName)
+    {
+        _animator.SetTrigger(triggerName);
     }
 
     public void GetHit(int damage)
@@ -126,4 +149,13 @@ public class Player : MonoBehaviour
     {
         return _isDead;
     }
+}
+
+
+public enum AnimationState
+{
+    Idle,
+    Walk,
+    Jump,
+    Interact,
 }

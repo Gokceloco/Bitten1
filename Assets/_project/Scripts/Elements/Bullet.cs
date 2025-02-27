@@ -32,10 +32,12 @@ public class Bullet : MonoBehaviour
     {
         if (other.CompareTag("Ground"))
         {
+            _weapon.player.gameDirector.fXManager.PlayWallImpactFX(transform.position);
             Destroy(gameObject);
         }
         if (other.CompareTag("Enemy"))
         {
+            _weapon.player.gameDirector.fXManager.PlayZombieImpactFX(transform.position, transform.forward);
             other.GetComponentInParent<Enemy>().GetHit(1, transform.forward);
             Destroy(gameObject);
         }

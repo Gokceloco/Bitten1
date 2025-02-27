@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -34,6 +35,8 @@ public class Enemy : MonoBehaviour
 
     private bool _isMoveAnimationActive;
 
+    private bool _isAttacking;
+
     public void StartEnemy(Player player)
     {
         agent.SetDestination(transform.position);
@@ -61,7 +64,8 @@ public class Enemy : MonoBehaviour
             if (distanceToPlayer < playerDistanceThreshold
                 && _gameDirector.gameState == GameState.GamePlay
                 && Time.time - _lastHitTime > hitDuration
-                && !_isBeingPushed)
+                && !_isBeingPushed
+                && !_isAttacking)
             {
                 MoveToPlayer();
                 if (!_isMoveAnimationActive)
@@ -77,10 +81,21 @@ public class Enemy : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            var player = collision.gameObject.GetComponent<Player>();
-            player.GetHit(1);
-            _lastHitTime = Time.time;
+            _animator.SetTrigger("Attack");
+            Invoke(nameof(TryHitPlayer), .5f);
+            _isAttacking = true;
         }
+    }
+
+    private void TryHitPlayer()
+    {
+        var distance = Vector3.Distance(_player.transform.position, transform.position);
+        if (distance < 2)
+        {
+            _player.GetHit(1);
+        }
+        _isAttacking = false;
+        _lastHitTime = Time.time;
     }
 
     private void OnTriggerEnter(Collider other)
