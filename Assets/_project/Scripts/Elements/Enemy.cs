@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -24,18 +25,20 @@ public class Enemy : MonoBehaviour
     private bool _isBeingPushed;
 
     private Vector3 _playerAttackOffset;
-
+    
+    private Rigidbody _rb;
+    private Level _level;
+    private Animator _animator;
+    private bool _isMoveAnimationActive;
+    private bool _isAttacking;
+    private bool _isDead;
     private bool _isAbleToMove;
 
-    private Rigidbody _rb;
-
-    private Level _level;
-
-    private Animator _animator;
-
-    private bool _isMoveAnimationActive;
-
-    private bool _isAttacking;
+    public Collider aliveCollider;
+    public List<Collider> deadColliders;
+    public GameObject shadow;
+    public ParticleSystem expirePSPrefab;
+    public Transform chestBone;
 
     public void StartEnemy(Player player)
     {
@@ -58,6 +61,10 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        if (_isDead)
+        {
+            return;
+        }
         if (_isAbleToMove)
         {
             var distanceToPlayer = (transform.position - _player.transform.position).magnitude;
@@ -72,6 +79,7 @@ public class Enemy : MonoBehaviour
                 {
                     _isMoveAnimationActive = true;
                     _animator.SetTrigger("Walk");
+                    _gameDirector.audioManager.PlayZombieSFX();
                 }
             }
         }
@@ -79,7 +87,7 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") && !_isDead)
         {
             _animator.SetTrigger("Attack");
             Invoke(nameof(TryHitPlayer), .5f);
@@ -93,6 +101,7 @@ public class Enemy : MonoBehaviour
         if (distance < 2)
         {
             _player.GetHit(1);
+            _gameDirector.audioManager.PlayZombieHitSFX();
         }
         _isAttacking = false;
         _lastHitTime = Time.time;
@@ -131,7 +140,7 @@ public class Enemy : MonoBehaviour
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
     }
 
-    public void GetHit(int damage, Vector3 hitDirection)
+    public void GetHit(int damage, Vector3 hitDirection, float pushForce)
     {
         _currentHealth -= damage;
         _healthBar.SetHealthBar((float)_currentHealth / startHealth);
@@ -144,18 +153,51 @@ public class Enemy : MonoBehaviour
         hitDirection.y = 0;
         transform.DOMove(transform.position + hitDirection, .2f).OnComplete(SetIsBeingPushedFalse);
         
-        if (_currentHealth <= 0)
+        if (_currentHealth <= 0 && !_isDead)
         {
-            Die();
+            Die(hitDirection, pushForce);
         }
     }
     void SetIsBeingPushedFalse()
     {
         _isBeingPushed = false;
     }
-    private void Die()
+    private void Die(Vector3 direction, float pushForce)
     {
         GetComponentInParent<Level>().EnemyDied(this);
-        gameObject.SetActive(false);
+        _isDead = true;
+        agent.enabled = false;
+        _rb.constraints = RigidbodyConstraints.FreezeRotation;
+        _rb.AddForce(direction.normalized * pushForce);
+
+        aliveCollider.enabled = false;
+        foreach (var c in deadColliders)
+        {
+            c.enabled = true;
+        }
+        shadow.SetActive(false);
+
+        PlayFallBackAnimation();
+
+        Destroy(gameObject, 3f);
+    }
+
+    private void OnDestroy()
+    {
+        var newPS = Instantiate(expirePSPrefab);
+        newPS.transform.position = chestBone.position;
+        newPS.Play();
+    }
+
+    private void PlayFallBackAnimation()
+    {
+        if (UnityEngine.Random.value < .5f)
+        {
+            _animator.SetTrigger("FallBack");
+        }
+        else
+        {
+            _animator.SetTrigger("FallBack2");
+        }
     }
 }

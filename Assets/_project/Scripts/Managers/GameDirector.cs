@@ -5,7 +5,11 @@ public class GameDirector : MonoBehaviour
 {
     public LevelManager levelManager;
     public FXManager fXManager;
+    public AudioManager audioManager;
     public Player player;
+
+    [Header("UI")]
+    public PlayerGotHitUI playerGotHitUI;
 
     public GameState gameState;
 
@@ -40,6 +44,16 @@ public class GameDirector : MonoBehaviour
         levelManager.RestartLevel();
         player.RestartPlayer();
         gameState = GameState.GamePlay;
+
+        audioManager.StopAmbientSound();
+        if(UnityEngine.Random.value < .5f)
+        {
+            audioManager.PlayAmbiantSound();
+        }
+        else
+        {
+            audioManager.PlayAmbiantSound2();
+        }
     }
 }
 

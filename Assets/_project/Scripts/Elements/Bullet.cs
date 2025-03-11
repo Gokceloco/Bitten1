@@ -5,6 +5,7 @@ public class Bullet : MonoBehaviour
 {
     public float bulletSpeed;
     public float maxDistance;
+    public float pushForce;
 
     private Weapon _weapon;
     private bool _isMoving;
@@ -32,13 +33,13 @@ public class Bullet : MonoBehaviour
     {
         if (other.CompareTag("Ground"))
         {
-            _weapon.player.gameDirector.fXManager.PlayWallImpactFX(transform.position);
+            _weapon.player.gameDirector.fXManager.PlayWallImpactFX(transform.position, -transform.forward);
             Destroy(gameObject);
         }
         if (other.CompareTag("Enemy"))
         {
             _weapon.player.gameDirector.fXManager.PlayZombieImpactFX(transform.position, transform.forward);
-            other.GetComponentInParent<Enemy>().GetHit(1, transform.forward);
+            other.GetComponent<Enemy>().GetHit(1, transform.forward, pushForce);
             Destroy(gameObject);
         }
     }

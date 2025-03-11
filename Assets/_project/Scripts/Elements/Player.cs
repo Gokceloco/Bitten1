@@ -9,9 +9,9 @@ public class Player : MonoBehaviour
 {
     [Header("Elements")]
     public GameDirector gameDirector;
-    public Transform cameraHolder;
     public HealthBar healthBar;
     public Transform clickIndicator;
+    public CameraHolder cameraHolder;
 
     [Header("Properties")]
     public LayerMask groundLayerMask;
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
         _rb.position += direction.normalized * speed * Time.deltaTime;
 
         var pos = transform.position;
-        cameraHolder.position = pos;
+        cameraHolder.transform.position = pos;
 
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -123,6 +123,13 @@ public class Player : MonoBehaviour
         }
 
         healthBar.transform.position = transform.position + Vector3.up * 2.4f;
+
+        SetWalkDirection(direction);
+    }
+
+    private void SetWalkDirection(Vector3 direction)
+    {
+        _animator.SetFloat("WalkDirection", Vector3.SignedAngle(transform.forward, direction, Vector3.up));
     }
 
     public void SetAnimationTrigger(string triggerName)
@@ -134,6 +141,8 @@ public class Player : MonoBehaviour
     {
         _currentHealth -= damage;
         healthBar.SetHealthBar((float)_currentHealth / startHealth);
+        cameraHolder.ShakeCamera(.9f, .4f);
+        gameDirector.fXManager.PlayPlayerGotHitFX();
         if (_currentHealth <= 0)
         {
             gameDirector.gameState = GameState.FailScreen;

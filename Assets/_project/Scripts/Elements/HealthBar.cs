@@ -7,7 +7,9 @@ public class HealthBar : MonoBehaviour
     public Transform fillBarParent;
     public SpriteRenderer fillBar;
 
+    public Color startColor;
     public Color flashColor;
+
     public void SetHealthBar(float ratio)
     {
         if (ratio >= 1f)
@@ -23,6 +25,9 @@ public class HealthBar : MonoBehaviour
             gameObject.SetActive(true);
         }
         fillBarParent.DOScaleX(ratio, .3f);
+
+        fillBar.DOKill();
+        fillBar.color = startColor;
         fillBar.DOColor(flashColor, .05f).SetLoops(2, LoopType.Yoyo);
     }
 

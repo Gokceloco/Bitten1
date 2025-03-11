@@ -22,6 +22,7 @@ public class Weapon : MonoBehaviour
 
     public GameObject machingunMesh;
     public GameObject shotgunMesh;
+    public ParticleSystem muzzlePS1;
 
     private void Shoot()
     {
@@ -44,6 +45,7 @@ public class Weapon : MonoBehaviour
 
         newBullet.StartBullet(this);
         _lastShootTime = Time.time;
+        muzzlePS1.Play();
     }
 
     private void Update()
@@ -54,6 +56,8 @@ public class Weapon : MonoBehaviour
             if (Input.GetMouseButton(0) && Time.time - _lastShootTime > machinegunAttackRate)
             {
                 Shoot();
+                player.gameDirector.audioManager.PlayMachineGunShotSFX();
+                player.cameraHolder.ShakeCamera(.2f,.1f);
             }
         }
         else if (weaponType == WeaponType.Shotgun)
@@ -67,6 +71,8 @@ public class Weapon : MonoBehaviour
                 var targetPos = transform.position - transform.forward * recoilAmount;
                 targetPos.y = player.transform.position.y;
                 player.transform.DOMove(targetPos, .2f);
+                player.gameDirector.audioManager.PlayShotGunSFX();
+                player.cameraHolder.ShakeCamera(1f, .5f);
             }
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))

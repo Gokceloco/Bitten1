@@ -3,22 +3,26 @@ using UnityEngine;
 
 public class FXManager : MonoBehaviour
 {
+    public GameDirector gameDirector;
     public ParticleSystem wallHitPS;
     public ParticleSystem zombieHitPS;
-    public void PlayWallImpactFX(Vector3 pos)
+    public void PlayWallImpactFX(Vector3 pos, Vector3 dir)
     {
         var newPS = Instantiate(wallHitPS);
         newPS.transform.position = pos;
         newPS.Play();
+        newPS.transform.LookAt(pos + dir);
     }
     public void PlayZombieImpactFX(Vector3 pos, Vector3 dir)
     {
         var newPS = Instantiate(zombieHitPS);
-        var velocity = newPS.velocityOverLifetime;
-        velocity.x = dir.x * 40;
-        velocity.y = dir.y * 40;
-        velocity.z = dir.z * 40;
         newPS.transform.position = pos;
+        newPS.transform.LookAt(newPS.transform.position + dir * 10);
         newPS.Play();
+    }
+
+    public void PlayPlayerGotHitFX()
+    {
+        gameDirector.playerGotHitUI.Show();
     }
 }
