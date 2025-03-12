@@ -177,6 +177,8 @@ public class Enemy : MonoBehaviour
         }
         shadow.SetActive(false);
 
+        transform.LookAt(transform.position - direction);
+
         PlayFallBackAnimation();
 
         Destroy(gameObject, 3f);

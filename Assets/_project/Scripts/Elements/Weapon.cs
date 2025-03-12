@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
@@ -23,6 +24,8 @@ public class Weapon : MonoBehaviour
     public GameObject machingunMesh;
     public GameObject shotgunMesh;
     public ParticleSystem muzzlePS1;
+    public ParticleSystem muzzlePS2;
+    public Light muzzleLight;
 
     private void Shoot()
     {
@@ -30,22 +33,30 @@ public class Weapon : MonoBehaviour
             player.gameDirector.levelManager.currentLevel.transform);
         newBullet.transform.position = shootPos.position;
 
+        muzzleLight.DOKill();
+        muzzleLight.intensity = 0;
+
         if (weaponType == WeaponType.Machinegun)
         {
             newBullet.transform.LookAt(shootPos.transform.position + shootPos.transform.forward * 10
             + transform.right * UnityEngine.Random.Range(-machinegunJitter, machinegunJitter)
             + Vector3.up * UnityEngine.Random.Range(-machinegunJitter, machinegunJitter));
+            muzzleLight.DOIntensity(50, .05f).SetLoops(2, LoopType.Yoyo);
         }
         else if (weaponType == WeaponType.Shotgun)
         {
             newBullet.transform.LookAt(shootPos.transform.position + shootPos.transform.forward * 10
             + transform.right * UnityEngine.Random.Range(-shotgunJitter, shotgunJitter)
             + Vector3.up * UnityEngine.Random.Range(-shotgunJitter, shotgunJitter));
+            muzzleLight.DOIntensity(100, .1f).SetLoops(2, LoopType.Yoyo);
         }
 
         newBullet.StartBullet(this);
         _lastShootTime = Time.time;
+        var main = muzzlePS1.main;
+        main.startColor = new Color(1, UnityEngine.Random.Range(.3f,.7f), 0, 1);
         muzzlePS1.Play();
+        muzzlePS2.Play();
     }
 
     private void Update()

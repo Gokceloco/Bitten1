@@ -5,6 +5,7 @@ public class AudioManager : MonoBehaviour
     public AudioSource machineGunShotAS;
     public AudioSource shotGunAS;
     public AudioSource zombieAS;
+    public AudioSource explosionAS;
     public AudioSource zombieHitAS;
     public AudioSource ambiance;
     public AudioSource ambiance2;
@@ -12,6 +13,11 @@ public class AudioManager : MonoBehaviour
     {
         machineGunShotAS.pitch = Random.Range(.8f, 1.2f);
         machineGunShotAS.Play();
+    }
+    public void PlayExplosionSFX()
+    {
+        explosionAS.pitch = Random.Range(.8f, 1.2f);
+        explosionAS.Play();
     }
     public void PlayShotGunSFX()
     {

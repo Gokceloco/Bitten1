@@ -6,6 +6,9 @@ public class FXManager : MonoBehaviour
     public GameDirector gameDirector;
     public ParticleSystem wallHitPS;
     public ParticleSystem zombieHitPS;
+
+    public ParticleSystem grenadeExplosionPS;
+
     public void PlayWallImpactFX(Vector3 pos, Vector3 dir)
     {
         var newPS = Instantiate(wallHitPS);
@@ -24,5 +27,12 @@ public class FXManager : MonoBehaviour
     public void PlayPlayerGotHitFX()
     {
         gameDirector.playerGotHitUI.Show();
+    }
+
+    public void PlayGrenadeExplosionFX(Vector3 pos)
+    {
+        var newPS = Instantiate(grenadeExplosionPS);
+        newPS.transform.position = pos;
+        newPS.Play();
     }
 }

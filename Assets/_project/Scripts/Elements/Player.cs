@@ -32,6 +32,13 @@ public class Player : MonoBehaviour
 
     private Animator _animator;
 
+    public Grenade grenadePrefab;
+    public float throwSpeed;
+    public Transform handTransform;
+    public float grenadeAngularVelocity;
+
+    private Vector3 _moveDirection;
+
     public void RestartPlayer()
     {
         gameObject.SetActive(true);
@@ -109,6 +116,7 @@ public class Player : MonoBehaviour
             if (animationState != AnimationState.Walk)
             {
                 animationState = AnimationState.Walk;
+                _animator.ResetTrigger("Idle");
                 _animator.SetTrigger("Walk");
             }
         }
@@ -118,6 +126,7 @@ public class Player : MonoBehaviour
             if (animationState != AnimationState.Idle)
             {
                 animationState = AnimationState.Idle;
+                _animator.ResetTrigger("Walk");
                 _animator.SetTrigger("Idle");
             }
         }
@@ -125,6 +134,27 @@ public class Player : MonoBehaviour
         healthBar.transform.position = transform.position + Vector3.up * 2.4f;
 
         SetWalkDirection(direction);
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            Invoke(nameof(ThrowGrenade), .25f);
+            _animator.SetTrigger("Throw");
+        }
+        _moveDirection = direction;
+    }
+
+    private void ThrowGrenade()
+    {
+        var newGrenade = Instantiate(grenadePrefab);
+        newGrenade.transform.position = handTransform.position;
+        var grenadeRB = newGrenade.GetComponent<Rigidbody>();
+        if (Vector3.SignedAngle(_moveDirection, transform.forward, Vector3.up) > 10)
+        {
+            _moveDirection = Vector3.zero;
+        }
+        grenadeRB.linearVelocity = (transform.forward + Vector3.up * .5f + _moveDirection) * throwSpeed;
+        grenadeRB.angularVelocity = transform.right * grenadeAngularVelocity;
+        newGrenade.StartGrenade(this);
     }
 
     private void SetWalkDirection(Vector3 direction)
