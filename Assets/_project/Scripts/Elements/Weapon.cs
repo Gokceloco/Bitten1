@@ -61,7 +61,10 @@ public class Weapon : MonoBehaviour
 
     private void Update()
     {
-
+        if (player.gameDirector.gameState != GameState.GamePlay)
+        {
+            return;
+        }
         if (weaponType == WeaponType.Machinegun)
         {
             if (Input.GetMouseButton(0) && Time.time - _lastShootTime > machinegunAttackRate)

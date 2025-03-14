@@ -10,12 +10,26 @@ public class GameDirector : MonoBehaviour
 
     [Header("UI")]
     public PlayerGotHitUI playerGotHitUI;
+    public MainMenu mainMenu;
 
     public GameState gameState;
 
     private void Start()
     {
-        RestartLevel();
+        //RestartLevel();
+        player.RestartPlayer();
+        mainMenu.Show();
+        gameState = GameState.MainMenu;
+        player.FreezeRigidBody();
+        audioManager.StopAmbientSound();
+        if (UnityEngine.Random.value < .5f)
+        {
+            audioManager.PlayAmbiantSound();
+        }
+        else
+        {
+            audioManager.PlayAmbiantSound2();
+        }
     }
 
     private void Update()
@@ -39,21 +53,10 @@ public class GameDirector : MonoBehaviour
         }
     }
 
-    private void RestartLevel()
+    public void RestartLevel()
     {
         levelManager.RestartLevel();
         player.RestartPlayer();
-        gameState = GameState.GamePlay;
-
-        audioManager.StopAmbientSound();
-        if(UnityEngine.Random.value < .5f)
-        {
-            audioManager.PlayAmbiantSound();
-        }
-        else
-        {
-            audioManager.PlayAmbiantSound2();
-        }
     }
 }
 

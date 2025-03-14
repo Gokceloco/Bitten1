@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using UnityEngine;
 
@@ -33,6 +34,9 @@ public class FXManager : MonoBehaviour
     {
         var newPS = Instantiate(grenadeExplosionPS);
         newPS.transform.position = pos;
+        var light = newPS.GetComponentInChildren<Light>();
+        light.DOIntensity(300, .2f).SetLoops(2, LoopType.Yoyo);
+        light.transform.position += Vector3.up * .1f;
         newPS.Play();
     }
 }

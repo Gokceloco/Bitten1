@@ -39,15 +39,17 @@ public class Player : MonoBehaviour
 
     private Vector3 _moveDirection;
 
+    private Vector3 _mousePos;
     public void RestartPlayer()
     {
-        gameObject.SetActive(true);
         _rb = GetComponent<Rigidbody>();
+        gameObject.SetActive(true);
         _agent = GetComponent<NavMeshAgent>();
         _rb.position = Vector3.zero;
         _currentHealth = startHealth;
         healthBar.SetHealthBar(1);
         _animator = GetComponentInChildren<Animator>();
+        _rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -98,6 +100,7 @@ public class Player : MonoBehaviour
             var lookPos = hit.point;
             lookPos.y = transform.position.y;
             transform.LookAt(lookPos);
+            _mousePos = lookPos;
         }
 
         if (Input.GetKeyDown(KeyCode.Space) 
@@ -148,11 +151,7 @@ public class Player : MonoBehaviour
         var newGrenade = Instantiate(grenadePrefab);
         newGrenade.transform.position = handTransform.position;
         var grenadeRB = newGrenade.GetComponent<Rigidbody>();
-        if (Vector3.SignedAngle(_moveDirection, transform.forward, Vector3.up) > 10)
-        {
-            _moveDirection = Vector3.zero;
-        }
-        grenadeRB.linearVelocity = (transform.forward + Vector3.up * .5f + _moveDirection) * throwSpeed;
+        grenadeRB.linearVelocity = (_mousePos - transform.position + Vector3.up * 2) * throwSpeed;
         grenadeRB.angularVelocity = transform.right * grenadeAngularVelocity;
         newGrenade.StartGrenade(this);
     }
@@ -187,6 +186,11 @@ public class Player : MonoBehaviour
     public bool GetIfDead()
     {
         return _isDead;
+    }
+
+    public void FreezeRigidBody()
+    {
+        _rb.constraints = RigidbodyConstraints.FreezeAll;
     }
 }
 
