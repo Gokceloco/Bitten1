@@ -11,17 +11,26 @@ public class GameDirector : MonoBehaviour
     [Header("UI")]
     public PlayerGotHitUI playerGotHitUI;
     public MainMenu mainMenu;
+    public FailUI failUI;
+    public VictoryUI victoryUI;
+    public LevelUI levelUI;
 
     public GameState gameState;
 
     private void Start()
     {
-        //RestartLevel();
         player.RestartPlayer();
         mainMenu.Show();
         gameState = GameState.MainMenu;
         player.FreezeRigidBody();
         audioManager.StopAmbientSound();
+        StartAmbientSound();
+        PlayerPrefs.SetInt("LastReachedLevel", Math.Max(PlayerPrefs.GetInt("LastReachedLevel"), 1));
+        levelUI.SetLevelText(PlayerPrefs.GetInt("LastReachedLevel"));
+    }
+
+    private void StartAmbientSound()
+    {
         if (UnityEngine.Random.value < .5f)
         {
             audioManager.PlayAmbiantSound();
@@ -40,15 +49,12 @@ public class GameDirector : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            levelManager.currentLevelNo += 1;
-            levelManager.currentLevelNo 
-                = Mathf.Min(levelManager.currentLevelNo, levelManager.levelPrebs.Count);
+            PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") + 1);
             RestartLevel();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            levelManager.currentLevelNo -= 1;
-            levelManager.currentLevelNo = Mathf.Max(1, levelManager.currentLevelNo);
+            PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") - 1);
             RestartLevel();
         }
     }
@@ -57,6 +63,29 @@ public class GameDirector : MonoBehaviour
     {
         levelManager.RestartLevel();
         player.RestartPlayer();
+        Invoke(nameof(ChangeGameStateToGamePlay), .2f);
+        levelUI.SetLevelText(PlayerPrefs.GetInt("LastReachedLevel"));
+    }
+
+    void ChangeGameStateToGamePlay()
+    {
+        gameState = GameState.GamePlay;
+    }
+
+    public void PlayerFailed()
+    {
+        failUI.Show();
+        levelManager.currentLevel.StopAllEnemies();
+        gameState = GameState.FailScreen;
+    }
+
+    public void LevelCompleted()
+    {
+        var lastReachedLevel = PlayerPrefs.GetInt("LastReachedLevel");
+        PlayerPrefs.SetInt("LastReachedLevel", lastReachedLevel + 1);
+        victoryUI.Show(levelManager.levelPrebs.Count == PlayerPrefs.GetInt("LastReachedLevel") - 1);
+        levelManager.currentLevel.StopAllEnemies();
+        gameState = GameState.VictoryScreen;
     }
 }
 

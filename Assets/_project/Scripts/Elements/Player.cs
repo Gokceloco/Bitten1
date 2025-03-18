@@ -40,16 +40,23 @@ public class Player : MonoBehaviour
     private Vector3 _moveDirection;
 
     private Vector3 _mousePos;
+
+    public Collider deadCollider;
     public void RestartPlayer()
     {
         _rb = GetComponent<Rigidbody>();
         gameObject.SetActive(true);
         _agent = GetComponent<NavMeshAgent>();
         _rb.position = Vector3.zero;
+        transform.position = Vector3.zero;
+        cameraHolder.transform.position = Vector3.zero;
         _currentHealth = startHealth;
         healthBar.SetHealthBar(1);
         _animator = GetComponentInChildren<Animator>();
         _rb.constraints = RigidbodyConstraints.FreezeRotation;
+        _animator.SetTrigger("Idle");
+        _animator.SetLayerWeight(1, 1);
+        deadCollider.enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -58,10 +65,21 @@ public class Player : MonoBehaviour
         {
             GetHit(1);
         }
+        if (other.CompareTag("Serum"))
+        {
+            gameDirector.LevelCompleted();
+            _animator.SetTrigger("Idle");
+            other.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
     {
+        if (gameDirector.gameState != GameState.GamePlay)
+        {
+            _rb.linearVelocity = Vector3.zero;
+            return;
+        }
         var direction = Vector3.zero;
 
         if (Input.GetKey(KeyCode.W))
@@ -174,14 +192,20 @@ public class Player : MonoBehaviour
         gameDirector.fXManager.PlayPlayerGotHitFX();
         if (_currentHealth <= 0)
         {
-            gameDirector.gameState = GameState.FailScreen;
-            _isDead = true;
-            gameDirector.levelManager.currentLevel.StopAllEnemies();
-            gameObject.SetActive(false);
+            Die();
         }
     }
 
-    
+    private void Die()
+    {        
+        _isDead = true;        
+        gameDirector.PlayerFailed();
+        _animator.SetLayerWeight(1, 0);
+        _animator.SetTrigger("Fall");
+        _rb.linearVelocity = Vector3.zero;
+        deadCollider.enabled = true;
+    }
+
 
     public bool GetIfDead()
     {

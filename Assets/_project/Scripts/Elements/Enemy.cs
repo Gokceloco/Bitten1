@@ -97,14 +97,17 @@ public class Enemy : MonoBehaviour
 
     private void TryHitPlayer()
     {
-        var distance = Vector3.Distance(_player.transform.position, transform.position);
-        if (distance < 2)
+        if (_player.gameDirector.gameState == GameState.GamePlay)
         {
-            _player.GetHit(1);
-            _gameDirector.audioManager.PlayZombieHitSFX();
-        }
-        _isAttacking = false;
-        _lastHitTime = Time.time;
+            var distance = Vector3.Distance(_player.transform.position, transform.position);
+            if (distance < 2)
+            {
+                _player.GetHit(1);
+                _gameDirector.audioManager.PlayZombieHitSFX();
+            }
+            _isAttacking = false;
+            _lastHitTime = Time.time;
+        }        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -138,6 +141,7 @@ public class Enemy : MonoBehaviour
     {
         agent.speed = 0;
         GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        _animator.SetTrigger("Idle");
     }
 
     public void GetHit(int damage, Vector3 hitDirection, float pushForce)

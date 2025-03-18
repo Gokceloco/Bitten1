@@ -36,12 +36,6 @@ public class MainMenu : MonoBehaviour
     {
         Hide();
         gameDirector.RestartLevel();
-        Invoke(nameof(PlayGameButtonPressedDelayed), .2f);
-    }
-
-    void PlayGameButtonPressedDelayed()
-    {
-        gameDirector.gameState = GameState.GamePlay;
     }
 
     public void ExitButotnPressed()

@@ -10,6 +10,7 @@ TagManager:
   - Border
   - YBorder
   - Door
+  - Serum
   layers:
   - Default
   - TransparentFX

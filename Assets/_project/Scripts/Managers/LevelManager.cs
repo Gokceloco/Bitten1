@@ -5,14 +5,13 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     public GameDirector gameDirector;
-    public int currentLevelNo;
     public List<Level> levelPrebs;
 
     public Level currentLevel;
     public void RestartLevel()
     {
         DeleteCurrentLevel();
-        CreateNewLevel(currentLevelNo - 1);
+        CreateNewLevel(PlayerPrefs.GetInt("LastReachedLevel"));
     }
 
     private void DeleteCurrentLevel()
@@ -25,7 +24,7 @@ public class LevelManager : MonoBehaviour
 
     private void CreateNewLevel(int levelNo)
     {
-        currentLevel = Instantiate(levelPrebs[levelNo]);
+        currentLevel = Instantiate(levelPrebs[levelNo - 1]);
         currentLevel.transform.position = Vector3.zero;
         currentLevel.StartLevel(gameDirector.player);
     }    
