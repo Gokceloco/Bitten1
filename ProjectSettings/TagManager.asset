@@ -11,6 +11,8 @@ TagManager:
   - YBorder
   - Door
   - Serum
+  - Gate
+  - MessageTrigger
   layers:
   - Default
   - TransparentFX

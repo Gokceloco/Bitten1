@@ -7,6 +7,7 @@ public class GameDirector : MonoBehaviour
     public FXManager fXManager;
     public AudioManager audioManager;
     public Player player;
+    public TimeManager timeManager;
 
     [Header("UI")]
     public PlayerGotHitUI playerGotHitUI;
@@ -14,13 +15,16 @@ public class GameDirector : MonoBehaviour
     public FailUI failUI;
     public VictoryUI victoryUI;
     public LevelUI levelUI;
+    public TimerUI timerUI;
+    public MessageUI messageUI;
 
     public GameState gameState;
 
     private void Start()
     {
-        player.RestartPlayer();
+        player.RestartPlayer(Vector3.zero);
         mainMenu.Show();
+        timerUI.Hide();
         gameState = GameState.MainMenu;
         player.FreezeRigidBody();
         audioManager.StopAmbientSound();
@@ -45,26 +49,37 @@ public class GameDirector : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            RestartLevel();
+            RestartLevel(Vector3.zero);
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
             PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") + 1);
-            RestartLevel();
+            RestartLevel(Vector3.zero);
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
             PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") - 1);
-            RestartLevel();
+            RestartLevel(Vector3.zero);
         }
     }
 
-    public void RestartLevel()
+    public void RestartLevel(Vector3 startPos)
     {
         levelManager.RestartLevel();
-        player.RestartPlayer();
+        player.RestartPlayer(startPos);
         Invoke(nameof(ChangeGameStateToGamePlay), .2f);
         levelUI.SetLevelText(PlayerPrefs.GetInt("LastReachedLevel"));
+        timeManager.StartTimeManager();
+        if (levelManager.currentLevel.levelTimeInMin != 0)
+        {
+            var minText = "MINS";
+            if (levelManager.currentLevel.levelTimeInMin == 1)
+            {
+                minText = "MIN";
+            }
+
+            messageUI.Show("YOU HAVE " + levelManager.currentLevel.levelTimeInMin + " " + minText + " TO FIND THE SERUM!", 4);
+        }
     }
 
     void ChangeGameStateToGamePlay()
@@ -72,18 +87,26 @@ public class GameDirector : MonoBehaviour
         gameState = GameState.GamePlay;
     }
 
-    public void PlayerFailed()
+    public void LevelFailed(bool isTimeUp)
     {
-        failUI.Show();
+        timerUI.Hide();
+        failUI.Show(isTimeUp);
         levelManager.currentLevel.StopAllEnemies();
         gameState = GameState.FailScreen;
     }
 
     public void LevelCompleted()
     {
-        var lastReachedLevel = PlayerPrefs.GetInt("LastReachedLevel");
-        PlayerPrefs.SetInt("LastReachedLevel", lastReachedLevel + 1);
-        victoryUI.Show(levelManager.levelPrebs.Count == PlayerPrefs.GetInt("LastReachedLevel") - 1);
+        timerUI.Hide();
+        if (PlayerPrefs.GetInt("LastReachedLevel") < 5)
+        {
+            PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") + 1);
+            victoryUI.Show(false);
+        }
+        else
+        {
+            victoryUI.Show(true);
+        }
         levelManager.currentLevel.StopAllEnemies();
         gameState = GameState.VictoryScreen;
     }

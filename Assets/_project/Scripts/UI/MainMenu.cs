@@ -35,7 +35,7 @@ public class MainMenu : MonoBehaviour
     public void PlayGameButtonPressed()
     {
         Hide();
-        gameDirector.RestartLevel();
+        gameDirector.RestartLevel(Vector3.zero);
     }
 
     public void ExitButotnPressed()

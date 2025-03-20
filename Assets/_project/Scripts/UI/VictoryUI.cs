@@ -31,7 +31,7 @@ public class VictoryUI : MonoBehaviour
 
     public void LoadNextLevel()
     {
-        gameDirector.RestartLevel();
+        gameDirector.RestartLevel(Vector3.zero);
         Hide();
     }
 }

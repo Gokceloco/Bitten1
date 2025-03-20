@@ -255,6 +255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fillBarParent: {fileID: 5585820133150351659}
   fillBar: {fileID: 8172950077228385892}
+  startColor: {r: 0, g: 0, b: 0, a: 0}
   flashColor: {r: 0.8914109, g: 0.8962264, b: 0.097232126, a: 1}
 --- !u!1 &6327163833546595061
 GameObject:

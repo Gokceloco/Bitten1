@@ -42,13 +42,13 @@ public class Player : MonoBehaviour
     private Vector3 _mousePos;
 
     public Collider deadCollider;
-    public void RestartPlayer()
+    public void RestartPlayer(Vector3 startPos)
     {
         _rb = GetComponent<Rigidbody>();
         gameObject.SetActive(true);
         _agent = GetComponent<NavMeshAgent>();
-        _rb.position = Vector3.zero;
-        transform.position = Vector3.zero;
+        _rb.position = startPos;
+        transform.position = startPos;
         cameraHolder.transform.position = Vector3.zero;
         _currentHealth = startHealth;
         healthBar.SetHealthBar(1);
@@ -70,6 +70,29 @@ public class Player : MonoBehaviour
             gameDirector.LevelCompleted();
             _animator.SetTrigger("Idle");
             other.gameObject.SetActive(false);
+        }
+        if (other.CompareTag("Gate"))
+        {
+            var gate = other.GetComponent<Gate>();
+            if (gate.levelIncrement != 0)
+            {
+                PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") + gate.levelIncrement);
+                gameDirector.levelManager.currentLevel.StopAllEnemies();
+                gameDirector.RestartLevel(gate.playerPositionOnOtherSide);                
+            }
+            else
+            {
+                _rb.position = gate.playerPositionOnOtherSide;
+                transform.position = gate.playerPositionOnOtherSide;
+            }
+            
+            //gameDirector.LevelCompleted();
+        }
+        if (other.CompareTag("MessageTrigger"))
+        {
+            var msgTrigger = other.GetComponent<MessageTrigger>();
+            gameDirector.messageUI.Show(msgTrigger.msg, msgTrigger.duration);
+            msgTrigger.gameObject.SetActive(false);
         }
     }
 
@@ -199,7 +222,7 @@ public class Player : MonoBehaviour
     private void Die()
     {        
         _isDead = true;        
-        gameDirector.PlayerFailed();
+        gameDirector.LevelFailed(false);
         _animator.SetLayerWeight(1, 0);
         _animator.SetTrigger("Fall");
         _rb.linearVelocity = Vector3.zero;

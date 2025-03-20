@@ -8,6 +8,8 @@ public class Level : MonoBehaviour
     public List<Enemy> _enemies = new List<Enemy>();
 
     public float yBorder;
+
+    public float levelTimeInMin;
     public void StartLevel(Player p)
     {
         player = p;
