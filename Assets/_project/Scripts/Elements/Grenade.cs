@@ -38,7 +38,7 @@ public class Grenade : MonoBehaviour
         _player.gameDirector.audioManager.PlayExplosionSFX();
         foreach (var e in enemyDetector.enemiesInRange)
         {
-            e.GetHit(1000, (e.transform.position - transform.position) + Vector3.up, 500);
+            e.GetHit(20, (e.transform.position - transform.position) + Vector3.up, 500);
         }
         
         Destroy(gameObject);

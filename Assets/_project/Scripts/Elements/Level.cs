@@ -5,7 +5,7 @@ using UnityEngine;
 public class Level : MonoBehaviour
 {
     public Player player;
-    public List<Enemy> _enemies = new List<Enemy>();
+    private List<Enemy> _enemies = new List<Enemy>();
 
     public float yBorder;
 

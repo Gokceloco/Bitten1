@@ -16,7 +16,7 @@ public class TimerUI : MonoBehaviour
     {
         gameObject.SetActive(true);
         _canvasGroup.DOKill();
-        _canvasGroup.DOFade(1, .2f);
+        _canvasGroup.DOFade(.5f, .2f);
     }
     public void Hide()
     {

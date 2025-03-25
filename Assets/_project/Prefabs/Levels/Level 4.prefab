@@ -53,7 +53,7 @@ MonoBehaviour:
   player: {fileID: 0}
   _enemies: []
   yBorder: 0
-  levelTimeInMin: 0
+  levelTimeInMin: 0.1
 --- !u!1001 &1634610375118888326
 PrefabInstance:
   m_ObjectHideFlags: 0

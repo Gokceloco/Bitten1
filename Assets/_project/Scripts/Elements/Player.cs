@@ -42,6 +42,8 @@ public class Player : MonoBehaviour
     private Vector3 _mousePos;
 
     public Collider deadCollider;
+
+    private bool _canJump;
     public void RestartPlayer(Vector3 startPos)
     {
         _rb = GetComponent<Rigidbody>();
@@ -144,7 +146,7 @@ public class Player : MonoBehaviour
             _mousePos = lookPos;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) 
+        if (Input.GetKeyDown(KeyCode.Space)
             && Physics.Raycast(transform.position + Vector3.up * .1f, Vector3.down, 1f, groundLayerMask))
         {
             _rb.linearVelocity = new Vector3(_rb.linearVelocity.x, jumpPower, _rb.linearVelocity.z);
@@ -154,7 +156,6 @@ public class Player : MonoBehaviour
         {
             _rb.linearVelocity -= Vector3.up * Time.deltaTime * fallSpeed;
         }
-
         if (direction.magnitude > 0)
         {
             if (animationState != AnimationState.Walk)
@@ -174,13 +175,16 @@ public class Player : MonoBehaviour
                 _animator.SetTrigger("Idle");
             }
         }
+        
+        
 
         healthBar.transform.position = transform.position + Vector3.up * 2.4f;
 
         SetWalkDirection(direction);
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) && gameDirector.grenadeManager.isGrenadeAvailabe)
         {
+            gameDirector.grenadeManager.StartGrenadeCoolDown();
             Invoke(nameof(ThrowGrenade), .25f);
             _animator.SetTrigger("Throw");
         }
@@ -194,7 +198,7 @@ public class Player : MonoBehaviour
         var grenadeRB = newGrenade.GetComponent<Rigidbody>();
         grenadeRB.linearVelocity = (_mousePos - transform.position + Vector3.up * 2) * throwSpeed;
         grenadeRB.angularVelocity = transform.right * grenadeAngularVelocity;
-        newGrenade.StartGrenade(this);
+        newGrenade.StartGrenade(this);        
     }
 
     private void SetWalkDirection(Vector3 direction)
@@ -238,6 +242,12 @@ public class Player : MonoBehaviour
     public void FreezeRigidBody()
     {
         _rb.constraints = RigidbodyConstraints.FreezeAll;
+    }
+
+    public void PlayTimeUpAnimation()
+    {
+        _animator.SetLayerWeight(1, 0);
+        _animator.SetTrigger("FallForTime");
     }
 }
 

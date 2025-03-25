@@ -17,10 +17,10 @@ public class FailUI : MonoBehaviour
         timeUpTMP.gameObject.SetActive(isTimeUp);
 
         gameObject.SetActive(true);
-        _canvasGroup.alpha = 1;
+        //_canvasGroup.alpha = 1;
 
-        //_canvasGroup.DOKill();
-        //_canvasGroup.DOFade(1, .2f).SetDelay(2);
+        _canvasGroup.DOKill();
+        _canvasGroup.DOFade(1, .2f).SetDelay(2);
     }
     public void Hide()
     {

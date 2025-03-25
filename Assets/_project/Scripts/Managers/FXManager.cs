@@ -10,6 +10,8 @@ public class FXManager : MonoBehaviour
 
     public ParticleSystem grenadeExplosionPS;
 
+    public GameObject criticalHitText;
+
     public void PlayWallImpactFX(Vector3 pos, Vector3 dir)
     {
         var newPS = Instantiate(wallHitPS);
@@ -38,5 +40,12 @@ public class FXManager : MonoBehaviour
         light.DOIntensity(300, .2f).SetLoops(2, LoopType.Yoyo);
         light.transform.position += Vector3.up * .1f;
         newPS.Play();
+    }
+
+    public void PlayCriticalHitFX(Vector3 pos)
+    {
+        var newCrit = Instantiate(criticalHitText);
+        newCrit.transform.position = pos + Vector3.up;
+        newCrit.transform.DOMoveY(pos.y + 4, .4f).OnComplete(()=>Destroy(newCrit));
     }
 }

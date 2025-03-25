@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
 {
     public float playerDistanceThreshold;
     public float hitDuration;
+    public int damage;
 
     public int startHealth;
     private int _currentHealth;
@@ -74,13 +75,17 @@ public class Enemy : MonoBehaviour
                 && !_isBeingPushed
                 && !_isAttacking)
             {
-                MoveToPlayer();
                 if (!_isMoveAnimationActive)
                 {
                     _isMoveAnimationActive = true;
                     _animator.SetTrigger("Walk");
                     _gameDirector.audioManager.PlayZombieSFX();
                 }
+                MoveToPlayer();                
+            }
+            else
+            {
+                agent.SetDestination(transform.position);
             }
         }
     }
@@ -90,7 +95,7 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.CompareTag("Player") && !_isDead)
         {
             _animator.SetTrigger("Attack");
-            Invoke(nameof(TryHitPlayer), .5f);
+            Invoke(nameof(TryHitPlayer), .5f * hitDuration);
             _isAttacking = true;
         }
     }
@@ -102,7 +107,7 @@ public class Enemy : MonoBehaviour
             var distance = Vector3.Distance(_player.transform.position, transform.position);
             if (distance < 2)
             {
-                _player.GetHit(1);
+                _player.GetHit(damage);
                 _gameDirector.audioManager.PlayZombieHitSFX();
             }
             _isAttacking = false;
@@ -146,7 +151,14 @@ public class Enemy : MonoBehaviour
 
     public void GetHit(int damage, Vector3 hitDirection, float pushForce)
     {
-        _currentHealth -= damage;
+        var angle = Vector3.Angle(transform.forward, hitDirection);
+        var dmgMultiplier = 1;
+        if (angle < 90f)
+        {
+            dmgMultiplier = 3;
+            _gameDirector.fXManager.PlayCriticalHitFX(transform.position);
+        }
+        _currentHealth -= damage * dmgMultiplier;
         _healthBar.SetHealthBar((float)_currentHealth / startHealth);
 
         _isBeingPushed = true;

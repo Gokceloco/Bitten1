@@ -8,6 +8,7 @@ public class GameDirector : MonoBehaviour
     public AudioManager audioManager;
     public Player player;
     public TimeManager timeManager;
+    public GrenadeManager grenadeManager;
 
     [Header("UI")]
     public PlayerGotHitUI playerGotHitUI;
@@ -17,6 +18,8 @@ public class GameDirector : MonoBehaviour
     public LevelUI levelUI;
     public TimerUI timerUI;
     public MessageUI messageUI;
+    public GrenadeUI grenadeUI;
+    public TimerRedUI timerRedUI;
 
     public GameState gameState;
 
@@ -31,6 +34,7 @@ public class GameDirector : MonoBehaviour
         StartAmbientSound();
         PlayerPrefs.SetInt("LastReachedLevel", Math.Max(PlayerPrefs.GetInt("LastReachedLevel"), 1));
         levelUI.SetLevelText(PlayerPrefs.GetInt("LastReachedLevel"));
+        grenadeUI.Hide();
     }
 
     private void StartAmbientSound()
@@ -69,7 +73,7 @@ public class GameDirector : MonoBehaviour
         player.RestartPlayer(startPos);
         Invoke(nameof(ChangeGameStateToGamePlay), .2f);
         levelUI.SetLevelText(PlayerPrefs.GetInt("LastReachedLevel"));
-        timeManager.StartTimeManager();
+        timeManager.RestartTimeManager();
         if (levelManager.currentLevel.levelTimeInMin != 0)
         {
             var minText = "MINS";
@@ -80,6 +84,8 @@ public class GameDirector : MonoBehaviour
 
             messageUI.Show("YOU HAVE " + levelManager.currentLevel.levelTimeInMin + " " + minText + " TO FIND THE SERUM!", 4);
         }
+        grenadeUI.Show();
+        grenadeManager.EnableGrenade();
     }
 
     void ChangeGameStateToGamePlay()
@@ -93,6 +99,9 @@ public class GameDirector : MonoBehaviour
         failUI.Show(isTimeUp);
         levelManager.currentLevel.StopAllEnemies();
         gameState = GameState.FailScreen;
+        grenadeUI.Hide();
+        player.PlayTimeUpAnimation();
+        timerRedUI.Hide();
     }
 
     public void LevelCompleted()
@@ -109,6 +118,8 @@ public class GameDirector : MonoBehaviour
         }
         levelManager.currentLevel.StopAllEnemies();
         gameState = GameState.VictoryScreen;
+        grenadeUI.Hide();
+        timerRedUI.Hide();
     }
 }
 
