@@ -124,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerDistanceThreshold: 20
   hitDuration: 1
+  damage: 2
   startHealth: 10
   agent: {fileID: 5834894372136154203}
   aliveCollider: {fileID: 8408896793349904801}
@@ -135,6 +136,7 @@ MonoBehaviour:
   shadow: {fileID: 8411252870382898731}
   expirePSPrefab: {fileID: 6660547266764185903, guid: 271a13b8a640a714ca8ae3daf97bc200, type: 3}
   chestBone: {fileID: 2061244674467799670}
+  enemyType: 0
 --- !u!1 &2845787346379652649
 GameObject:
   m_ObjectHideFlags: 0

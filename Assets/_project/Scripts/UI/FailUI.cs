@@ -12,7 +12,7 @@ public class FailUI : MonoBehaviour
     {
         _canvasGroup = GetComponent<CanvasGroup>();
     }
-    public void Show(bool isTimeUp)
+    public void Show(bool isTimeUp, float delay)
     {
         timeUpTMP.gameObject.SetActive(isTimeUp);
 
@@ -20,7 +20,7 @@ public class FailUI : MonoBehaviour
         //_canvasGroup.alpha = 1;
 
         _canvasGroup.DOKill();
-        _canvasGroup.DOFade(1, .2f).SetDelay(2);
+        _canvasGroup.DOFade(1, .2f).SetDelay(delay);
     }
     public void Hide()
     {

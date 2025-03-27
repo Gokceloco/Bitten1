@@ -41,6 +41,8 @@ public class Enemy : MonoBehaviour
     public ParticleSystem expirePSPrefab;
     public Transform chestBone;
 
+    public EnemyType enemyType;
+
     public void StartEnemy(Player player)
     {
         agent.SetDestination(transform.position);
@@ -92,8 +94,10 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player") && !_isDead)
+        if (collision.gameObject.CompareTag("Player") && !_isDead && !_player.GetIfDead() && !_isAttacking)
         {
+            transform.DOKill();
+            transform.DOLookAt(_player.transform.position, .2f);
             _animator.SetTrigger("Attack");
             Invoke(nameof(TryHitPlayer), .5f * hitDuration);
             _isAttacking = true;
@@ -161,14 +165,18 @@ public class Enemy : MonoBehaviour
         _currentHealth -= damage * dmgMultiplier;
         _healthBar.SetHealthBar((float)_currentHealth / startHealth);
 
-        _isBeingPushed = true;
+        
         if (_isAbleToMove)
         {
             transform.DOKill();
         }
         hitDirection.y = 0;
-        transform.DOMove(transform.position + hitDirection, .2f).OnComplete(SetIsBeingPushedFalse);
-        
+        if (enemyType != EnemyType.Boss)
+        {
+            _isBeingPushed = true;
+            transform.DOMove(transform.position + hitDirection, .2f).OnComplete(SetIsBeingPushedFalse);
+        }
+
         if (_currentHealth <= 0 && !_isDead)
         {
             Die(hitDirection, pushForce);
@@ -218,4 +226,11 @@ public class Enemy : MonoBehaviour
             _animator.SetTrigger("FallBack2");
         }
     }
+}
+
+public enum EnemyType
+{
+    Normal,
+    Fast,
+    Boss
 }

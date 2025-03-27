@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public HealthBar healthBar;
     public Transform clickIndicator;
     public CameraHolder cameraHolder;
+    public Weapon weapon;
 
     [Header("Properties")]
     public LayerMask groundLayerMask;
@@ -21,6 +22,8 @@ public class Player : MonoBehaviour
     public float jumpPower;
     public float fallSpeed;
     public AnimationState animationState;
+    public float lookOffset;
+    public float cameraSmoothTime;
 
     private bool _isDead;
 
@@ -44,6 +47,9 @@ public class Player : MonoBehaviour
     public Collider deadCollider;
 
     private bool _canJump;
+
+    private Vector3 _velocity;
+
     public void RestartPlayer(Vector3 startPos)
     {
         _rb = GetComponent<Rigidbody>();
@@ -96,6 +102,10 @@ public class Player : MonoBehaviour
             gameDirector.messageUI.Show(msgTrigger.msg, msgTrigger.duration);
             msgTrigger.gameObject.SetActive(false);
         }
+        if (other.CompareTag("YBorder"))
+        {
+            Die(true);
+        }
     }
 
     private void Update()
@@ -132,9 +142,7 @@ public class Player : MonoBehaviour
 
         _rb.position += direction.normalized * speed * Time.deltaTime;
 
-        var pos = transform.position;
-        cameraHolder.transform.position = pos;
-
+        
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         
@@ -191,6 +199,24 @@ public class Player : MonoBehaviour
         _moveDirection = direction;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Door"))
+        {
+            transform.DOKill();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        var pos = transform.position;
+        var lookOffsetVector = transform.forward * lookOffset;
+
+        cameraHolder.transform.position
+            = Vector3.SmoothDamp(cameraHolder.transform.position,
+            pos + lookOffsetVector, ref _velocity, cameraSmoothTime);
+    }
+
     private void ThrowGrenade()
     {
         var newGrenade = Instantiate(grenadePrefab);
@@ -219,17 +245,24 @@ public class Player : MonoBehaviour
         gameDirector.fXManager.PlayPlayerGotHitFX();
         if (_currentHealth <= 0)
         {
-            Die();
+            Die(false);
         }
     }
 
-    private void Die()
+    private void Die(bool isFalling)
     {        
         _isDead = true;        
-        gameDirector.LevelFailed(false);
         _animator.SetLayerWeight(1, 0);
-        _animator.SetTrigger("Fall");
-        _rb.linearVelocity = Vector3.zero;
+        if (!isFalling)
+        {
+            gameDirector.LevelFailed(false, 2);
+            _animator.SetTrigger("Fall");
+            _rb.linearVelocity = Vector3.zero;
+        }
+        else
+        {
+            gameDirector.LevelFailed(false, 0);
+        }
         deadCollider.enabled = true;
     }
 

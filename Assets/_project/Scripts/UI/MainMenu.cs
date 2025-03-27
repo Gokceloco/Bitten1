@@ -38,9 +38,8 @@ public class MainMenu : MonoBehaviour
         gameDirector.RestartLevel(Vector3.zero);
     }
 
-    public void ExitButotnPressed()
+    public void ExitButtonPressed()
     {
-        print("Exit Button Pressed");
         Application.Quit();
     }
 }

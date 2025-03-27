@@ -53,6 +53,6 @@ public class TimeManager : MonoBehaviour
 
     private void TimeIsUp()
     {
-        gameDirector.LevelFailed(true);
+        gameDirector.LevelFailed(true, 2);
     }
 }

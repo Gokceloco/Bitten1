@@ -20,6 +20,7 @@ public class GameDirector : MonoBehaviour
     public MessageUI messageUI;
     public GrenadeUI grenadeUI;
     public TimerRedUI timerRedUI;
+    public InventoryUI inventoryUI;
 
     public GameState gameState;
 
@@ -35,6 +36,7 @@ public class GameDirector : MonoBehaviour
         PlayerPrefs.SetInt("LastReachedLevel", Math.Max(PlayerPrefs.GetInt("LastReachedLevel"), 1));
         levelUI.SetLevelText(PlayerPrefs.GetInt("LastReachedLevel"));
         grenadeUI.Hide();
+        inventoryUI.Hide();
     }
 
     private void StartAmbientSound()
@@ -65,6 +67,10 @@ public class GameDirector : MonoBehaviour
             PlayerPrefs.SetInt("LastReachedLevel", PlayerPrefs.GetInt("LastReachedLevel") - 1);
             RestartLevel(Vector3.zero);
         }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EscapeButtonPressed();
+        }
     }
 
     public void RestartLevel(Vector3 startPos)
@@ -86,6 +92,7 @@ public class GameDirector : MonoBehaviour
         }
         grenadeUI.Show();
         grenadeManager.EnableGrenade();
+        inventoryUI.Show();
     }
 
     void ChangeGameStateToGamePlay()
@@ -93,15 +100,19 @@ public class GameDirector : MonoBehaviour
         gameState = GameState.GamePlay;
     }
 
-    public void LevelFailed(bool isTimeUp)
+    public void LevelFailed(bool isTimeUp, float delay)
     {
         timerUI.Hide();
-        failUI.Show(isTimeUp);
+        failUI.Show(isTimeUp, delay);
         levelManager.currentLevel.StopAllEnemies();
         gameState = GameState.FailScreen;
         grenadeUI.Hide();
-        player.PlayTimeUpAnimation();
+        if (isTimeUp)
+        {
+            player.PlayTimeUpAnimation();
+        }
         timerRedUI.Hide();
+        inventoryUI.Hide();
     }
 
     public void LevelCompleted()
@@ -120,6 +131,20 @@ public class GameDirector : MonoBehaviour
         gameState = GameState.VictoryScreen;
         grenadeUI.Hide();
         timerRedUI.Hide();
+        inventoryUI.Hide();
+    }
+
+    public void EscapeButtonPressed()
+    {
+        mainMenu.Show();
+        levelManager.currentLevel.StopAllEnemies();
+        gameState = GameState.MainMenu;
+        grenadeUI.Hide();
+        timerRedUI.Hide();
+        inventoryUI.Hide();
+        timerUI.Hide();
+        player.FreezeRigidBody();
+        audioManager.StopAmbientSound();
     }
 }
 

@@ -8,7 +8,7 @@ public class EnemySpawnTrigger : MonoBehaviour
 {
     public Enemy enemyPrefab;
 
-    private List<Transform> _enemySpawnPoints = new List<Transform>();
+    public List<Transform> _enemySpawnPoints = new List<Transform>();
     private Level _level;
 
     private void Start()

@@ -2,6 +2,7 @@ using DG.Tweening;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Weapon : MonoBehaviour
 {
@@ -67,16 +68,20 @@ public class Weapon : MonoBehaviour
         }
         if (weaponType == WeaponType.Machinegun)
         {
-            if (Input.GetMouseButton(0) && Time.time - _lastShootTime > machinegunAttackRate)
+            if (Input.GetMouseButton(0) 
+                && Time.time - _lastShootTime > machinegunAttackRate 
+                && !IsPointerOverUIObject())
             {
                 Shoot();
                 player.gameDirector.audioManager.PlayMachineGunShotSFX();
-                player.cameraHolder.ShakeCamera(.2f,.1f);
+                player.cameraHolder.ShakeCamera(.2f, .1f);
             }
         }
         else if (weaponType == WeaponType.Shotgun)
         {
-            if (Input.GetMouseButtonUp(0) && Time.time - _lastShootTime > shotgunAttackRate)
+            if (Input.GetMouseButtonUp(0) 
+                && Time.time - _lastShootTime > shotgunAttackRate
+                && !IsPointerOverUIObject())
             {
                 for (int i = 0; i < 10; i++)
                 {
@@ -86,7 +91,7 @@ public class Weapon : MonoBehaviour
                 targetPos.y = player.transform.position.y;
                 player.transform.DOMove(targetPos, .2f);
                 player.gameDirector.audioManager.PlayShotGunSFX();
-                player.cameraHolder.ShakeCamera(1f, .5f);
+                player.cameraHolder.ShakeCamera(1f, .5f);                
             }
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -99,7 +104,12 @@ public class Weapon : MonoBehaviour
         }
     }
 
-    private void LoadShotGun()
+    private bool IsPointerOverUIObject()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    public void LoadShotGun()
     {
         weaponType = WeaponType.Shotgun;
         machingunMesh.SetActive(false);
@@ -107,7 +117,7 @@ public class Weapon : MonoBehaviour
         player.SetAnimationTrigger("Switch");
     }
 
-    private void LoadMachineGun()
+    public void LoadMachineGun()
     {
         weaponType = WeaponType.Machinegun;
         shotgunMesh.SetActive(false);
